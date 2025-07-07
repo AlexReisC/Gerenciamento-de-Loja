@@ -24,10 +24,6 @@ public class Cliente {
     @Column(unique = true, nullable = false)
     private String email;
     
-    @NotBlank 
-    @Size(min = 6)
-    private String senha;
-    
     @NotBlank(message = "O cpf não deve ficar em branco")
     @CPF(message = "Digite um CPF válido")
     @Column(unique = true, nullable = false)
@@ -44,14 +40,12 @@ public class Cliente {
     
     public Cliente(){}
 
-    public Cliente(String nome, String email, String senha, String cpf, String telefone,
-            LocalDateTime dataCadastro, Endereco endereco) {
+    public Cliente(String nome, String email, String cpf, String telefone, Endereco endereco) {
         this.nome = nome;
         this.email = email;
-        this.senha = senha;
         this.cpf = cpf;
         this.telefone = telefone;
-        this.dataCadastro = dataCadastro;
+        this.dataCadastro = LocalDateTime.now();
         this.endereco = endereco;
     }
 
@@ -73,14 +67,6 @@ public class Cliente {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getSenha() {
-        return senha;
-    }
-
-    public void setSenha(String senha) {
-        this.senha = senha;
     }
 
     public String getCpf() {
