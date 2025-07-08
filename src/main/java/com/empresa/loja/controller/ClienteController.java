@@ -53,8 +53,8 @@ public class ClienteController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping
-    public ResponseEntity<ApiResponse<?>> listarClientesPeloNome(@RequestParam @Size(min = 3, message = "O nome deve conter pelo menos 3 letras") String nome){
+    @GetMapping("/nome")
+    public ResponseEntity<ApiResponse<?>> listarClientesPeloNome(@RequestParam(required = true, defaultValue = "nome") @Size(min = 3, message = "O nome deve conter pelo menos 3 letras") String nome){
         List<Cliente> clientes = clienteService.obterClientePeloNome(nome);
 //        List<ClienteResponse> responses = clientes.stream()
 //                .map(this::convertToResponse)
