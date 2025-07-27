@@ -1,10 +1,6 @@
-package com.empresa.loja.entity;
+package com.empresa.loja.cliente;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import org.hibernate.validator.constraints.br.CPF;
 
 import java.time.LocalDateTime;
 
@@ -15,37 +11,33 @@ public class Cliente {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "O nome não deve ficar em branco")
-    @Size(min = 3, max = 100, message = "O nome deve conter pelo menos três caracteres e no máximo 100")
+    @Column(nullable = false, length = 100)
     private String nome;
 
-    @NotBlank 
-    @Email(message = "Confirme que o email é válido")
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
-    
-    @NotBlank(message = "O cpf não deve ficar em branco")
-    @CPF(message = "Digite um CPF válido")
-    @Column(unique = true, nullable = false)
+
+    @Column(nullable = false, unique = true, length = 11)
     private String cpf;
-    
-    @NotBlank(message = "O telefone não pode ficar em branco")
+
+    @Column(length = 20)
     private String telefone;
     
+    @Column(name = "data_cadastro", nullable = false)
     private LocalDateTime dataCadastro;
     
     @OneToOne(cascade = CascadeType.ALL, optional = false)
-    @JoinColumn(name = "id_endereco")
+    @JoinColumn(name = "endereco_id", referencedColumnName = "id", nullable = false)
     private Endereco endereco;
     
     public Cliente(){}
 
-    public Cliente(String nome, String email, String cpf, String telefone, Endereco endereco) {
+    public Cliente(String nome, String email, String cpf, String telefone, LocalDateTime dataCadastro, Endereco endereco) {
         this.nome = nome;
         this.email = email;
         this.cpf = cpf;
         this.telefone = telefone;
-        this.dataCadastro = LocalDateTime.now();
+        this.dataCadastro = dataCadastro;
         this.endereco = endereco;
     }
 
