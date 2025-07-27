@@ -19,8 +19,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ClientAlreadyExistsException.class)
     public ResponseEntity<ErroApiResponse> handleClientAlreadyExists(ClientAlreadyExistsException exception){
         ErroApiResponse erroApiResponse = new ErroApiResponse(
-                exception.getMensagem(),
-                null,
+                "Cliente inválido",
+                List.of(exception.getMensagem()),
                 HttpStatus.CONFLICT.value(),
                 LocalDateTime.now()
         );
@@ -34,12 +34,12 @@ public class GlobalExceptionHandler {
                 .getFieldErrors().forEach(er -> erros.add(er.getField() + ": " + er.getDefaultMessage()));
 
         ErroApiResponse erroApiResponse = new ErroApiResponse(
-                "Dados inválidos",
+                "Dados de entrada inválidos",
                 erros,
                 HttpStatus.BAD_REQUEST.value(),
                 LocalDateTime.now()
         );
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erroApiResponse);
+        return ResponseEntity.badRequest().body(erroApiResponse);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
@@ -49,19 +49,19 @@ public class GlobalExceptionHandler {
                 ": " + violation.getMessage()));
 
         ErroApiResponse erroApiResponse = new ErroApiResponse(
-                "Dados inválidos",
+                "Dados de entrada inválidos",
                 erros,
                 HttpStatus.BAD_REQUEST.value(),
                 LocalDateTime.now()
         );
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erroApiResponse);
+        return ResponseEntity.badRequest().body(erroApiResponse);
     }
 
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<ErroApiResponse> handleNoSuchElement(NoSuchElementException exception){
         ErroApiResponse erroApiResponse = new ErroApiResponse(
-                exception.getMessage(),
-                null,
+                "Não encontrado",
+                List.of(exception.getMessage()),
                 HttpStatus.NOT_FOUND.value(),
                 LocalDateTime.now()
         );
