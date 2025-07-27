@@ -1,9 +1,6 @@
 package com.empresa.loja.cliente;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "enderecos")
@@ -81,7 +78,5 @@ public class Endereco {
     public void setUf(String uf) {
         this.uf = uf;
     }
-
-    
     
 }
