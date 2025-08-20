@@ -1,4 +1,4 @@
-package com.loja.sistema.dtos.request;
+package com.loja.sistema.pedido.dto;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;

@@ -1,4 +1,4 @@
-package com.loja.sistema.dtos.response;
+package com.loja.sistema.cliente.dto;
 
 import java.time.LocalDateTime;
 

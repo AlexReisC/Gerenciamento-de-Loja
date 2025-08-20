@@ -1,4 +1,4 @@
-package com.loja.sistema.dtos.request;
+package com.loja.sistema.cliente.dto;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;

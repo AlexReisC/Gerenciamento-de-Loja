@@ -1,6 +1,8 @@
-package com.loja.sistema.dtos.response;
+package com.loja.sistema.pedido.dto;
 
 import java.math.BigDecimal;
+
+import com.loja.sistema.produto.dto.ProdutoResponseDTO;
 
 public record ItemPedidoResponseDTO(
         Long id,

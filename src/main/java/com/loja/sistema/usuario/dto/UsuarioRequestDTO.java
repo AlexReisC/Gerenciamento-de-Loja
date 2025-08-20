@@ -1,4 +1,4 @@
-package com.loja.sistema.dtos.request;
+package com.loja.sistema.usuario.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
