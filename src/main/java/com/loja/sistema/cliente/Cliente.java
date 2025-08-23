@@ -17,7 +17,7 @@ public class Cliente {
     @Column(nullable = false, unique = true, length = 100)
     private String email;
 
-    @Column(nullable = false, unique = true, length = 11)
+    @Column(nullable = false, unique = true, length = 11, updatable = false)
     private String cpf;
 
     @Column(nullable = false, length = 15)
@@ -28,6 +28,19 @@ public class Cliente {
 
     @Embedded
     private Endereco endereco;
+
+    @PrePersist
+    protected void prePersist() {
+        this.dataCadastro = LocalDateTime.now();
+    }
+
+    public Cliente(String nome, String email, String cpf, String telefone, Endereco endereco) {
+        this.nome = nome;
+        this.email = email;
+        this.cpf = cpf;
+        this.telefone = telefone;
+        this.endereco = endereco;
+    }
 
     public Long getId() {
         return id;
