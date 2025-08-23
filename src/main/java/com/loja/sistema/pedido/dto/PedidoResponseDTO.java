@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.loja.sistema.cliente.dto.ClienteResponseDTO;
+import com.loja.sistema.cliente.dto.response.ClienteResponseDTO;
 
 public record PedidoResponseDTO(
         Long id,

@@ -1,4 +1,4 @@
-package com.loja.sistema.produto.dto;
+package com.loja.sistema.categoria.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

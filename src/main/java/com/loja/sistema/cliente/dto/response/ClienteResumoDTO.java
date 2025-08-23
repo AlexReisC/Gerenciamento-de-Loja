@@ -1,4 +1,4 @@
-package com.loja.sistema.cliente.dto;
+package com.loja.sistema.cliente.dto.response;
 
 public record ClienteResumoDTO(
     Long id,

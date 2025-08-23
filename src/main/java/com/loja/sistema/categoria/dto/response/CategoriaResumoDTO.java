@@ -1,4 +1,4 @@
-package com.loja.sistema.produto.dto;
+package com.loja.sistema.categoria.dto.response;
 
 public record CategoriaResumoDTO(
     Long id,

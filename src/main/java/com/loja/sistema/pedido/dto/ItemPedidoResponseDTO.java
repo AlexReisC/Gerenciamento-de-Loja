@@ -2,7 +2,7 @@ package com.loja.sistema.pedido.dto;
 
 import java.math.BigDecimal;
 
-import com.loja.sistema.produto.dto.ProdutoResponseDTO;
+import com.loja.sistema.produto.dto.response.ProdutoResponseDTO;
 
 public record ItemPedidoResponseDTO(
         Long id,

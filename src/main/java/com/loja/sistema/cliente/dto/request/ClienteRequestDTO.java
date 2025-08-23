@@ -1,4 +1,4 @@
-package com.loja.sistema.cliente.dto;
+package com.loja.sistema.cliente.dto.request;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -10,6 +10,7 @@ import org.hibernate.validator.constraints.br.CPF;
 public record ClienteRequestDTO(
         @NotBlank(message = "Nome é obrigatório")
         @Size(min = 3, max = 100, message = "Nome deve ter entre 3 e 100 caracteres")
+        @Pattern(regexp = "^[A-Za-zÀ-ÿ\\s]+$", message = "Nome deve conter apenas letras")
         String nome,
 
         @NotBlank(message = "Email é obrigatório")
