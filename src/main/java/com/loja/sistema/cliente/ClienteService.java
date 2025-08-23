@@ -2,23 +2,23 @@ package com.loja.sistema.cliente;
 
 import java.util.Optional;
 
-import com.loja.sistema.pedido.Pedido;
-import com.loja.sistema.pedido.PedidoRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.loja.sistema.cliente.dto.request.ClienteAtualizacaoDTO;
+import com.loja.sistema.cliente.dto.request.ClienteFiltro;
 import com.loja.sistema.cliente.dto.request.ClienteRequestDTO;
 import com.loja.sistema.cliente.dto.response.ClientePageResponseDTO;
 import com.loja.sistema.cliente.dto.response.ClienteResponseDTO;
 import com.loja.sistema.exception.ElementoNaoEncontradoException;
 import com.loja.sistema.exception.EntidadeDuplicadaException;
+import com.loja.sistema.pedido.Pedido;
+import com.loja.sistema.pedido.PedidoRepository;
 
 @Service
 public class ClienteService {
@@ -57,10 +57,23 @@ public class ClienteService {
     }
 
     @Transactional(readOnly = true)
-    public ClientePageResponseDTO obterClientes(int pagina, int tamanho, String ordenacao){
-        logger.info("Buscando todos os clientes com paginação.");
-        Pageable pageable = PageRequest.of(pagina, tamanho, Sort.by(ordenacao));
-        Page<Cliente> clientePage = clienteRepository.findAll(pageable);
+    public ClientePageResponseDTO obterClientes(Pageable pageable, ClienteFiltro clienteFiltro){
+        logger.info("Buscando todos os clientes com paginação e filtro.");
+        Specification<Cliente> specNome = ClienteSpecification.nomeContem(clienteFiltro.nome());
+        Specification<Cliente> specData = ClienteSpecification.dataCadastroIgual(clienteFiltro.dataCadastro());
+
+        Specification<Cliente> especificacao = null;
+        if (specNome != null) {
+            especificacao = specNome;
+            logger.info("Filtro aplicado: Nome contém '{}'", clienteFiltro.nome());
+        }
+        if (specData != null) {
+            especificacao = (especificacao == null) ? specData : especificacao.and(specData);
+            logger.info("Filtro aplicado: Data de cadastro igual a '{}'", clienteFiltro.dataCadastro());
+        }
+
+        Page<Cliente> clientePage = (especificacao == null) ? clienteRepository.findAll(pageable)
+                : clienteRepository.findAll(especificacao, pageable);
 
         return new ClientePageResponseDTO(
                 clientePage.getContent()
