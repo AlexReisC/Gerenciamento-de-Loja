@@ -1,17 +1,18 @@
 package com.loja.sistema.exception;
 
-import com.loja.sistema.dtos.response.ErroApiResponse;
-import jakarta.validation.ConstraintViolationException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
+import com.loja.sistema.dtos.response.ErroApiResponse;
+
+import jakarta.validation.ConstraintViolationException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -56,8 +57,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(erroApiResponse);
     }
 
-    @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<ErroApiResponse> handleNoSuchElement(NoSuchElementException exception){
+    @ExceptionHandler(ElementoNaoEncontradoException.class)
+    public ResponseEntity<ErroApiResponse> handleNoSuchElement(ElementoNaoEncontradoException exception){
         ErroApiResponse erroApiResponse = new ErroApiResponse(
                 "Não encontrado",
                 List.of(exception.getMessage()),
@@ -66,5 +67,17 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erroApiResponse);
+    }
+
+    @ExceptionHandler(OperacaoNaoPermitidaException.class)
+    public ResponseEntity<ErroApiResponse> handleOperacaoNaoPermitida(OperacaoNaoPermitidaException exception){
+        ErroApiResponse erroApiResponse = new ErroApiResponse(
+                "Operação não permitida",
+                List.of(exception.getMessage()),
+                HttpStatus.FORBIDDEN.value(),
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(erroApiResponse);
     }
 }
