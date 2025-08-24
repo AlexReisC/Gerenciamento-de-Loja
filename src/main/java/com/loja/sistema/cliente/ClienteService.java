@@ -13,8 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.loja.sistema.cliente.dto.request.ClienteAtualizacaoDTO;
 import com.loja.sistema.cliente.dto.request.ClienteFiltro;
 import com.loja.sistema.cliente.dto.request.ClienteRequestDTO;
-import com.loja.sistema.cliente.dto.response.ClientePageResponseDTO;
 import com.loja.sistema.cliente.dto.response.ClienteResponseDTO;
+import com.loja.sistema.dtos.response.PageResponse;
 import com.loja.sistema.exception.ElementoNaoEncontradoException;
 import com.loja.sistema.exception.EntidadeDuplicadaException;
 import com.loja.sistema.pedido.Pedido;
@@ -57,7 +57,7 @@ public class ClienteService {
     }
 
     @Transactional(readOnly = true)
-    public ClientePageResponseDTO obterClientes(Pageable pageable, ClienteFiltro clienteFiltro){
+    public PageResponse<ClienteResponseDTO> obterClientes(Pageable pageable, ClienteFiltro clienteFiltro){
         logger.info("Buscando todos os clientes com paginação e filtro.");
         Specification<Cliente> specNome = ClienteSpecification.nomeContem(clienteFiltro.nome());
         Specification<Cliente> specData = ClienteSpecification.dataCadastroIgual(clienteFiltro.dataCadastro());
@@ -75,15 +75,15 @@ public class ClienteService {
         Page<Cliente> clientePage = (especificacao == null) ? clienteRepository.findAll(pageable)
                 : clienteRepository.findAll(especificacao, pageable);
 
-        return new ClientePageResponseDTO(
-                clientePage.getContent()
-                    .stream()
-                    .map(clienteMapper::toResponse)
-                    .toList(),
-                clientePage.getNumber(),
-                clientePage.getTotalPages(),
-                clientePage.getTotalElements(),
-                clientePage.getSize()
+        return new PageResponse<>(
+            clientePage.getContent()
+                .stream()
+                .map(clienteMapper::toResponse)
+                .toList(),
+            clientePage.getNumber(),
+            clientePage.getTotalPages(),
+            clientePage.getTotalElements(),
+            clientePage.getSize()
         );
     }
 

@@ -9,7 +9,7 @@ public class ClienteSpecification {
     public static Specification<Cliente> nomeContem(String nome) {
         return (root, query, criteriaBuilder) -> {
             if (nome != null && !nome.isEmpty()){
-                return criteriaBuilder.like(criteriaBuilder.lower(root.get("nome")), "%" + nome + "%");
+                return criteriaBuilder.like(criteriaBuilder.lower(root.get("nome")), "%" + nome.toLowerCase() + "%");
             }
             return null;
         };
