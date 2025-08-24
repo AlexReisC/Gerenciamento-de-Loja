@@ -17,12 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.loja.sistema.cliente.dto.request.ClienteAtualizacaoDTO;
 import com.loja.sistema.cliente.dto.request.ClienteFiltro;
 import com.loja.sistema.cliente.dto.request.ClienteRequestDTO;
-import com.loja.sistema.cliente.dto.response.ClientePageResponseDTO;
 import com.loja.sistema.cliente.dto.response.ClienteResponseDTO;
+import com.loja.sistema.dtos.response.PageResponse;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.PositiveOrZero;
 
 @RestController("/api/clientes")
@@ -40,34 +41,35 @@ public class ClienteController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ClienteResponseDTO> obterClientePorId(@PathVariable @NotNull @DecimalMin("1") Long id) {
+    public ResponseEntity<ClienteResponseDTO> obterClientePorId(@PathVariable @NotNull @DecimalMin(value = "1", message = "O ID deve ser maior ou igual a 1") Long id) {
         ClienteResponseDTO clienteResponse = clienteService.obterClientePeloID(id);
         return ResponseEntity.ok(clienteResponse);
     }
 
     @GetMapping
-    public ResponseEntity<ClientePageResponseDTO> listarTodosClientes(
-            @PositiveOrZero @RequestParam(defaultValue = "0") int page,
-            @DecimalMin("1") @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "asc") String direction,
+    public ResponseEntity<PageResponse<ClienteResponseDTO>> listarTodosClientes(
+            @PositiveOrZero(message = "A página deve ser zero ou maior") @RequestParam(defaultValue = "0") int pagina,
+            @DecimalMin(value = "1", message = "O tamanho da página deve ser maior ou igual a 1") @RequestParam(defaultValue = "10") int tamanho,
+            @RequestParam(defaultValue = "id") @Pattern(regexp = "id|nome|data_cadastro", message = "Campo de ordenação inválido") String classificarPor,
+            @RequestParam(defaultValue = "asc") @Pattern(regexp = "asc|desc", message = "Direção inválida (asc|desc)") String direcao,
             @RequestParam(required = false) ClienteFiltro filtro
     ) {
-        Sort sort = direction.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-        ClientePageResponseDTO clientes = clienteService.obterClientes(PageRequest.of(page, size, sort), filtro);
+        Sort sort = direcao.equalsIgnoreCase("asc") ? Sort.by(classificarPor).ascending() : Sort.by(classificarPor).descending();
+        PageResponse<ClienteResponseDTO> clientes = clienteService.obterClientes(PageRequest.of(pagina, tamanho, sort), filtro);
         
         return ResponseEntity.ok(clientes);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> atualizarCliente(@PathVariable @NotNull @DecimalMin("1") Long id, 
+    public ResponseEntity<Void> atualizarCliente(
+        @PathVariable @NotNull @DecimalMin(value = "1", message = "O ID deve ser maior ou igual a 1") Long id, 
         @RequestBody @Valid ClienteAtualizacaoDTO clienteAtualizacaoDto) {
         clienteService.atualizarCliente(id, clienteAtualizacaoDto);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarCliente(@PathVariable @NotNull @DecimalMin("1") Long id) {
+    public ResponseEntity<Void> deletarCliente(@PathVariable @NotNull @DecimalMin(value = "1", message = "O ID deve ser maior ou igual a 1") Long id) {
         clienteService.deletarCliente(id);
         return ResponseEntity.noContent().build();
     }
