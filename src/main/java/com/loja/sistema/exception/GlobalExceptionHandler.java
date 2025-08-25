@@ -57,8 +57,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(erroApiResponse);
     }
 
-    @ExceptionHandler(ElementoNaoEncontradoException.class)
-    public ResponseEntity<ErroApiResponse> handleNoSuchElement(ElementoNaoEncontradoException exception){
+    @ExceptionHandler(RecursoNaoEncontradoException.class)
+    public ResponseEntity<ErroApiResponse> handleNoSuchElement(RecursoNaoEncontradoException exception){
         ErroApiResponse erroApiResponse = new ErroApiResponse(
                 "Não encontrado",
                 List.of(exception.getMessage()),
