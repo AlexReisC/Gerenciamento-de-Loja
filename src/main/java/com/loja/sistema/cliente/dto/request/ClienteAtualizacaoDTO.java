@@ -1,5 +1,7 @@
 package com.loja.sistema.cliente.dto.request;
 
+import org.hibernate.validator.constraints.br.CPF;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -11,7 +13,10 @@ public record ClienteAtualizacaoDTO(
     
     @Email(message = "Email inválido")
     String email,
-    
+
+    @CPF(message = "CPF inválido")
+    String cpf,
+
     @Pattern(regexp = "(\\d{2}) \\d{4,5}-\\d{4}", message = "O telefone deve estar no formato (XX) XXXXX-XXXX")
     String telefone,
 
