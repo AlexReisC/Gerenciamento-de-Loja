@@ -15,7 +15,7 @@ import com.loja.sistema.cliente.dto.request.ClienteFiltro;
 import com.loja.sistema.cliente.dto.request.ClienteRequestDTO;
 import com.loja.sistema.cliente.dto.response.ClienteResponseDTO;
 import com.loja.sistema.dtos.response.PageResponse;
-import com.loja.sistema.exception.ElementoNaoEncontradoException;
+import com.loja.sistema.exception.RecursoNaoEncontradoException;
 import com.loja.sistema.exception.EntidadeDuplicadaException;
 import com.loja.sistema.pedido.Pedido;
 import com.loja.sistema.pedido.PedidoRepository;
@@ -90,27 +90,28 @@ public class ClienteService {
     @Transactional(readOnly = true)
     public ClienteResponseDTO obterClientePeloID(Long id){
         Cliente cliente = clienteRepository.findById(id).orElseThrow(
-                () -> new ElementoNaoEncontradoException("Cliente com ID " + id + " não encontrado."));
+                () -> new RecursoNaoEncontradoException("Cliente com ID " + id + " não encontrado."));
         
         return clienteMapper.toResponse(cliente);
     }
 
     @Transactional
-    public void atualizarCliente(Long id, ClienteAtualizacaoDTO clienteAtualizacaoDto){
+    public ClienteResponseDTO atualizarCliente(Long id, ClienteAtualizacaoDTO clienteAtualizacaoDto){
         logger.info("Iniciando atualização de dados do cliente com ID {}", id);
 
         Cliente cliente = clienteRepository.findById(id)
-                .orElseThrow(() -> new ElementoNaoEncontradoException("Cliente com ID " + id + " não encontrado."));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Cliente com ID " + id + " não encontrado."));
 
-        Optional<Cliente> cliente2 = clienteRepository.findByEmailAndIdNot(clienteAtualizacaoDto.email(), id);
-        if (cliente2.isPresent()) {
-            logger.error("Email {} já em uso pelo cliente com ID {}", clienteAtualizacaoDto.email(), cliente2.get().getId());
-            throw new EntidadeDuplicadaException("O email já está em uso por outro cliente");
+        if (clienteAtualizacaoDto.email() != null || clienteAtualizacaoDto.cpf() != null) {
+            if (clienteRepository.existsByIdNotAndEmailAndCpf(cliente.getId(), clienteAtualizacaoDto.email(), clienteAtualizacaoDto.cpf())) {
+                throw new EntidadeDuplicadaException("Email ou CPF já cadastrado para outro cliente.");
+            }
         }
 
         clienteMapper.updateEntityFromRequest(clienteAtualizacaoDto, cliente);
-        clienteRepository.save(cliente);
-        logger.info("Cliente com ID {} atualizado com sucesso", cliente.getId());
+        Cliente salvo = clienteRepository.save(cliente);
+        logger.info("Cliente com ID {} atualizado com sucesso", salvo.getId());
+        return clienteMapper.toResponse(salvo);
     }
 
     @Transactional
@@ -119,7 +120,7 @@ public class ClienteService {
 
         if (!clienteRepository.existsById(id)) {
             logger.error("Cliente não exite com ID: {}", id);
-            throw new ElementoNaoEncontradoException("Cliente não existe.");
+            throw new RecursoNaoEncontradoException("Cliente não existe.");
         }
 
         Optional<Pedido> pedido = pedidoRepository.findByCliente(id);

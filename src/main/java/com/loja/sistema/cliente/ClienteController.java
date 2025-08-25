@@ -50,9 +50,9 @@ public class ClienteController {
     public ResponseEntity<PageResponse<ClienteResponseDTO>> listarTodosClientes(
             @PositiveOrZero(message = "A página deve ser zero ou maior") @RequestParam(defaultValue = "0") int pagina,
             @DecimalMin(value = "1", message = "O tamanho da página deve ser maior ou igual a 1") @RequestParam(defaultValue = "10") int tamanho,
-            @RequestParam(defaultValue = "id") @Pattern(regexp = "id|nome|data_cadastro", message = "Campo de ordenação inválido") String classificarPor,
+            @RequestParam(defaultValue = "id") @Pattern(regexp = "id|nome|dataCadastro|''", message = "Campo de ordenação inválido") String classificarPor,
             @RequestParam(defaultValue = "asc") @Pattern(regexp = "asc|desc", message = "Direção inválida (asc|desc)") String direcao,
-            @RequestParam(required = false) ClienteFiltro filtro
+            ClienteFiltro filtro
     ) {
         Sort sort = direcao.equalsIgnoreCase("asc") ? Sort.by(classificarPor).ascending() : Sort.by(classificarPor).descending();
         PageResponse<ClienteResponseDTO> clientes = clienteService.obterClientes(PageRequest.of(pagina, tamanho, sort), filtro);
@@ -61,11 +61,11 @@ public class ClienteController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> atualizarCliente(
+    public ResponseEntity<ClienteResponseDTO> atualizarCliente(
         @PathVariable @NotNull @DecimalMin(value = "1", message = "O ID deve ser maior ou igual a 1") Long id, 
         @RequestBody @Valid ClienteAtualizacaoDTO clienteAtualizacaoDto) {
-        clienteService.atualizarCliente(id, clienteAtualizacaoDto);
-        return ResponseEntity.noContent().build();
+        ClienteResponseDTO atualizado = clienteService.atualizarCliente(id, clienteAtualizacaoDto);
+        return ResponseEntity.ok(atualizado);
     }
 
     @DeleteMapping("/{id}")

@@ -14,4 +14,8 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long>, JpaSpec
 
     @Query("SELECT c FROM Cliente c WHERE c.email = :email AND c.id != :id")
     Optional<Cliente> findByEmailAndIdNot(@Param("email") String email, @Param("id") Long id);
+
+    @Query("SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END " +  
+            "FROM Cliente c WHERE c.id != :id AND (c.email = :email OR c.cpf = :cpf)")
+    boolean existsByIdNotAndEmailAndCpf(@Param("id") Long id, @Param("email") String email, @Param("cpf") String cpf);
 }

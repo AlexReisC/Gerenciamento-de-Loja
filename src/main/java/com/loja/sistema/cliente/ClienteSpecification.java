@@ -17,7 +17,7 @@ public class ClienteSpecification {
 
     public static Specification<Cliente> dataCadastroIgual(LocalDateTime data) {
         return (root, query, criteriaBuilder) ->
-            data == null ? null : criteriaBuilder.equal(root.get("data_cadastro"), data);
+            data == null ? null : criteriaBuilder.equal(root.get("dataCadastro"), data);
     }
 
 }
