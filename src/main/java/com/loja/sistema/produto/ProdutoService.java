@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.loja.sistema.categoria.CategoriaRepository;
 import com.loja.sistema.dtos.response.PageResponse;
-import com.loja.sistema.exception.ElementoNaoEncontradoException;
+import com.loja.sistema.exception.RecursoNaoEncontradoException;
 import com.loja.sistema.exception.EntidadeDuplicadaException;
 import com.loja.sistema.exception.OperacaoNaoPermitidaException;
 import com.loja.sistema.pedido.PedidoRepository;
@@ -31,10 +31,10 @@ public class ProdutoService {
 
     private final Logger logger = LoggerFactory.getLogger(ProdutoService.class);
 
-    public ProdutoService(ProdutoRepository produtoRepository, CategoriaRepository categoriaRepository, ProdutoMapper produtoMapper) {
+    public ProdutoService(ProdutoRepository produtoRepository, CategoriaRepository categoriaRepository, ProdutoMapper produtoMapper, PedidoRepository pedidoRepository) {
         this.produtoRepository = produtoRepository;
         this.categoriaRepository = categoriaRepository;
-        this.pedidoRepository = null;
+        this.pedidoRepository = pedidoRepository;
         this.produtoMapper = produtoMapper;
     }
 
@@ -49,7 +49,7 @@ public class ProdutoService {
         }
 
         categoriaRepository.findById(produtoRequestDto.categoriaId())
-                .orElseThrow(() -> new ElementoNaoEncontradoException("Categoria não encontrada."));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Categoria não encontrada."));
         
         Produto produto = produtoMapper.toEntity(produtoRequestDto);
 
@@ -62,7 +62,7 @@ public class ProdutoService {
     public ProdutoResponseDTO buscarProdutoPorId(Long id) {
         logger.info("Buscando produto com ID: {}", id);
         Produto produto = produtoRepository.findById(id).orElseThrow(
-            () -> new ElementoNaoEncontradoException("Produto não encontrado com ID: " + id)
+            () -> new RecursoNaoEncontradoException("Produto não encontrado com ID: " + id)
         );
         
         logger.info("Produto encontrado: {}", produto.getNome());
@@ -81,7 +81,6 @@ public class ProdutoService {
         Page<Produto> produtosPage = produtoRepository.findByAtivoTrue(spec, pageable);
 
         List<ProdutoResponseDTO> produtos = produtosPage.getContent().stream()
-            .filter(t -> t.getAtivo() == true)
             .map(produtoMapper::toResponseDTO)
             .toList();
 
@@ -146,7 +145,7 @@ public class ProdutoService {
     public void atualizarProduto(Long id, ProdutoAtualizacaoDTO produtoAtualizacaoDTO) {
         logger.info("Iniciando atualização do produto com ID: {}", id);
         Produto produto = produtoRepository.findById(id)
-            .orElseThrow(() -> new ElementoNaoEncontradoException("Produto não encontrado com ID: " + id));
+            .orElseThrow(() -> new RecursoNaoEncontradoException("Produto não encontrado com ID: " + id));
 
         Optional<Produto> produtoByNomeEquals = produtoRepository.findByNomeEqualsAndIdNot(produtoAtualizacaoDTO.nome(), id);
 
@@ -157,7 +156,7 @@ public class ProdutoService {
         }
 
         categoriaRepository.findById(produtoAtualizacaoDTO.categoriaId())
-            .orElseThrow(() -> new ElementoNaoEncontradoException("Categoria não encontrada com ID: " + produtoAtualizacaoDTO.categoriaId()));
+            .orElseThrow(() -> new RecursoNaoEncontradoException("Categoria não encontrada com ID: " + produtoAtualizacaoDTO.categoriaId()));
 
         produtoMapper.atualizarProduto(produtoAtualizacaoDTO, produto);
         produtoRepository.save(produto);
@@ -168,7 +167,7 @@ public class ProdutoService {
     public void deletarProduto(Long id) {
         logger.info("Iniciando deleção do produto com ID: {}", id);
         Produto produto = produtoRepository.findById(id)
-            .orElseThrow(() -> new ElementoNaoEncontradoException("Produto não encontrado com ID: " + id));
+            .orElseThrow(() -> new RecursoNaoEncontradoException("Produto não encontrado com ID: " + id));
 
         Optional<String> produtoStatus = pedidoRepository.findStatusByProdutoId(id);
         if (produtoStatus.isPresent() && produtoStatus.get().equals("PENDENTE")) {
