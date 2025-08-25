@@ -19,7 +19,7 @@ public class ProdutoSpecification {
             if (categoriaId == null || categoriaId <= 0) {
                 return criteriaBuilder.conjunction();
             }
-            return criteriaBuilder.equal(root.get("id_categoria"), categoriaId);
+            return criteriaBuilder.equal(root.get("categoria"), categoriaId);
         };
     }
 

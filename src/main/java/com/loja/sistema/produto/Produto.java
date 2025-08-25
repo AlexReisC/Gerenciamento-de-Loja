@@ -81,7 +81,7 @@ public class Produto {
     }
 
     public void setEstoque(Integer estoque) {
-        if (estoque > 0){
+        if (estoque >= 0){
             this.estoque = estoque;
         }
     }
